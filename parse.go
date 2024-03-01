@@ -36,7 +36,8 @@ import (
 )
 
 const (
-	magicWord = "DICM"
+	magicWord           = "DICM"
+	defaultCodingSystem = "ISO_IR 100"
 )
 
 var (
@@ -127,6 +128,7 @@ type Parser struct {
 // frameChannel is an optional channel (can be nil) upon which DICOM image frames will be sent as they are parsed (if
 // provided).
 func NewParser(in io.Reader, bytesToRead int64, frameChannel chan *frame.Frame, opts ...ParseOption) (*Parser, error) {
+	encodingNames := make([]string, 0)
 	optSet := toParseOptSet(opts...)
 	p := Parser{
 		reader: &reader{
@@ -134,6 +136,13 @@ func NewParser(in io.Reader, bytesToRead int64, frameChannel chan *frame.Frame, 
 			opts:      optSet,
 		},
 		frameChannel: frameChannel,
+	}
+
+	// set default Coding System
+	encodingNames = append(encodingNames, defaultCodingSystem)
+	cs, characterSetErr := charset.ParseSpecificCharacterSet(encodingNames)
+	if characterSetErr == nil {
+		p.reader.rawReader.SetCodingSystem(cs)
 	}
 
 	elems := []*Element{}
@@ -281,8 +290,8 @@ func SkipPixelData() ParseOption {
 // a PixelData element will be added to the dataset with the
 // PixelDataInfo.IntentionallyUnprocessed = true, and the raw bytes of the
 // entire PixelData element stored in PixelDataInfo.UnprocessedValueData.
-// 
-// In the future, we may be able to extend this functionality to support 
+//
+// In the future, we may be able to extend this functionality to support
 // on-demand processing of elements elsewhere in the library.
 func SkipProcessingPixelDataValue() ParseOption {
 	return func(set *parseOptSet) {
