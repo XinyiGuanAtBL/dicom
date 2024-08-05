@@ -139,7 +139,7 @@ func NewParser(in io.Reader, bytesToRead int64, frameChannel chan *frame.Frame, 
 	}
 
 	// set default Coding System
-	encodingNames = append(encodingNames, defaultCodingSystem)
+	//encodingNames = append(encodingNames, defaultCodingSystem)
 	cs, characterSetErr := charset.ParseSpecificCharacterSet(encodingNames)
 	if characterSetErr == nil {
 		p.reader.rawReader.SetCodingSystem(cs)
