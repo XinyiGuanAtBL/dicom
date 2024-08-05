@@ -85,9 +85,9 @@ func ParseSpecificCharacterSet(encodingNames []string) (CodingSystem, error) {
 		if htmlName, ok := htmlEncodingNames[name]; !ok {
 			// TODO(saito) Support more encodings.
 			// use ISO-IR 100 by default
-			d, err := htmlindex.Get("ISO_IR 100")
+			d, err := htmlindex.Get("iso-8859-1")
 			if err != nil {
-				panic("ISO_IR 100 not found")
+				panic("iso-8859-1 not found")
 			}
 			c = d.NewDecoder()
 		} else {
